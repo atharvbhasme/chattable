@@ -1,0 +1,25 @@
+{
+  "name": "chattable",
+  "version": "1.0.0",
+  "description": "Simple chatting app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "atharv.bhasme@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^11.0.1",
+    "@fastify/env": "^5.0.2",
+    "fastify": "^5.4.0",
+    "fastify-cli": "^7.4.0",
+    "fastify-plugin": "^5.0.1",
+    "mongoose": "^8.16.1",
+    "prettier": "^3.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3"
+  }
+}
