@@ -2,9 +2,11 @@
   "name": "chattable",
   "version": "1.0.0",
   "description": "Simple chatting app",
-  "main": "app.js",
+  "main": "src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --watch src src/server.ts",
+    "build": "tsc -p tsconfig.json"
   },
   "author": "atharv.bhasme@gmail.com",
   "license": "ISC",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^24.0.10",
     "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }
