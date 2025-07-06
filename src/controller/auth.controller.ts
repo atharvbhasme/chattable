@@ -30,6 +30,12 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) return reply.status(401).send({ message: 'Invalid credentials' });
 
+  await UserModel.updateOne({
+    email: user.email
+  },{
+    isOnline: true
+  })
+
   const token = await (reply as any).jwtSign({ userId: user._id, username: user.username });
   return reply.send({ token });
 }
