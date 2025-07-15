@@ -36,7 +36,8 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
     isOnline: true
   })
 
+  const userId = user._id
   const token = await (reply as any).jwtSign({ userId: user._id, username: user.username });
-  return reply.send({ token });
+  return reply.send({ token, userId });
 }
 }
