@@ -6,18 +6,13 @@ let io: Server;
 export const setupSocket = (server: FastifyInstance) => {
   io = new Server(server.server, {
     cors: {
-      origin: 'http://localhost:5173', // your frontend
+      origin: 'http://localhost:3000', // your frontend
       methods: ['GET', 'POST']
     }
   });
 
   io.on('connection', (socket) => {
     console.log('🔌 New client connected:', socket.id);
-
-    socket.on('join', (roomId) => {
-      socket.join(roomId);
-      console.log(`👥 ${socket.id} joined room: ${roomId}`);
-    });
 
     socket.on('sendMessage', (data) => {
       const { roomId, message, sender } = data;

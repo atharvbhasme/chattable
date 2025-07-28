@@ -26,6 +26,15 @@ export function SingUpForm({
         <CardContent>
           <form>
             <div className="flex flex-col gap-6">
+               <div className="grid gap-3">
+                <Label htmlFor="text">Anonymous Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="alberteinstein123"
+                  required
+                />
+              </div>
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input

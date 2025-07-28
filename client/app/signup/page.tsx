@@ -1,3 +1,4 @@
+"use client"
 import { ModeToggle } from "@/components/mode-toggle";
 import { SingUpForm } from "@/components/singup-form";
 

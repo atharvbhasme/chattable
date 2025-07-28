@@ -16,7 +16,7 @@ const app = async () => {
 const prefix = '/api'
 
 await childApp.register(cors, {
-  origin: "http://localhost:5173",
+  origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 });
 
