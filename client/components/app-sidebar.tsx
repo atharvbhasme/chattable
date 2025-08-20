@@ -1,8 +1,10 @@
-import { Home, Inbox } from "lucide-react"
+"use client";
+import { Home, Inbox, MessageCircle} from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,20 +12,34 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { NavUser } from "@/components/ui/nav-user"
+import { title } from "process"
 
 // Menu items.
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/home",
     icon: Home,
   },
   {
     title: "Find new people",
-    url: "#",
+    url: "/members",
     icon: Inbox,
+  },{
+    title: 'Old Chats',
+    url: '/chat',
+    icon: MessageCircle
   }
 ]
+
+const data = {
+   user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "https://ui-avatars.com/api/?name=Chat&background=random",
+  }
+}
 
 export function AppSidebar() {
   return (
@@ -47,6 +63,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+     <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
     </Sidebar>
   )
 }

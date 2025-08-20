@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,11 +10,27 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { register } from "@/services/register"
 
 export function SingUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [usernameInput, setUsenrame] = useState('');
+  const [emailInput, setEmail] = useState('');
+  const [passwordInput, setPassword] = useState('');
+  const onSubmitRegister = async () => {
+    const input = {
+      username: usernameInput.trim(),
+      email: emailInput.trim(),
+      password: passwordInput.trim()
+    }
+    
+    const registerResult = await register(input.username, input.email, input.password);
+    console.log("------> result", registerResult)
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -24,7 +41,6 @@ export function SingUpForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
             <div className="flex flex-col gap-6">
                <div className="grid gap-3">
                 <Label htmlFor="text">Anonymous Username</Label>
@@ -32,6 +48,7 @@ export function SingUpForm({
                   id="username"
                   type="text"
                   placeholder="alberteinstein123"
+                  onChange={(e)=> setUsenrame(e.target.value)}
                   required
                 />
               </div>
@@ -42,16 +59,17 @@ export function SingUpForm({
                   type="email"
                   placeholder="m@example.com"
                   required
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" required onChange={(e) => setPassword(e.target.value)}/>
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
+                <Button className="w-full" onClick={onSubmitRegister}>
                   Signup
                 </Button>
                  <Button variant="outline" className="w-full">
@@ -59,7 +77,6 @@ export function SingUpForm({
                 </Button>
               </div>
             </div>
-          </form>
         </CardContent>
       </Card>
     </div>
