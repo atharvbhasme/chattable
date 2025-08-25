@@ -1,9 +1,11 @@
+'use client'
+
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/ui/accordion"; // ✅ use shadcn import
+} from "@/components/ui/accordion";
 import { ChatListItem } from "@/components/chat-list-item";
 
 export function ChatList() {

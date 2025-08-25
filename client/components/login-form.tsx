@@ -13,24 +13,32 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from 'next/navigation';
 import { useState } from "react";
+import { login } from "@/services/login";
+import { toast } from "sonner"
+import { useDispatch } from "react-redux";
+import { setLoginResponse } from "@/lib/redux/slices/authSlice";
 
-interface LoginFormProps extends React.ComponentProps<"div"> {
-  onLogin: (email: string, password: string) => void
-}
 
 export function LoginForm({
   className,
-  onLogin,
   ...props
-}: LoginFormProps) {
+}:  React.ComponentProps<"div"> ) {
   const router = useRouter();
-  const [email, setEmail] = useState("")
+  const dispatch = useDispatch();
+  const [userName, setUser] = useState("")
   const [password, setPassword] = useState("")
-  
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-      router.push('/home') 
+  const handleLogin = async () => {
+    const response = await login(userName, password);
+    if(response.token){
+      sessionStorage.setItem('token', response.token)
+      toast("Login successful",{
+        duration: 2
+      })
+    }
+    dispatch(setLoginResponse({ token: response.token, userId: response.userId }))
+    router.push('/landing')
   }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -41,25 +49,24 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  // type="email"
-                  placeholder="m@example.com"
-                  // required
+                  id="username"
+                  placeholder="lional ronaldo"
+                  required
+                  onChange={(e)=>setUser(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password"/>
+                <Input id="password" type="password" onChange={(e) => setPassword(e.target.value)}/>
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" onClick={handleLogin} disabled={userName === '' || password === '' }>
                   Login
                 </Button>
                 <Button variant="outline" className="w-full">
@@ -73,7 +80,6 @@ export function LoginForm({
                 Sign up
               </a>
             </div>
-          </form>
         </CardContent>
       </Card>
     </div>

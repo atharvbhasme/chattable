@@ -1,5 +1,5 @@
 'use client'
-import { homePageDataInterface } from "@/app/home/page";
+import { homePageDataInterface } from "@/app/landing/page";
 import {
   Card,
   CardContent,

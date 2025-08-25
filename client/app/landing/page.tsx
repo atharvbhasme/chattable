@@ -2,7 +2,9 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { HomePageSelector } from "@/components/home-page-selector";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { setChatMode } from "@/lib/redux/slices/chatModeSlice";
 import { useRouter } from 'next/navigation';
+import { useDispatch } from "react-redux";
 
 export interface homePageDataInterface {
   optionName: string;
@@ -10,18 +12,29 @@ export interface homePageDataInterface {
   onClick: () => void
 }
 
-export default function Home() {
+export default function Landing() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const onChatClick = () => {
+     dispatch(setChatMode("normal"))
+     console.log("stored the redux state")
+     router.push('/chat')
+  }
+  const onAiClick = () => {
+    dispatch(setChatMode("ai"))
+     console.log("stored the redux state")
+    router.push('/ai')
+  }
   const homePageData: homePageDataInterface[] = [
     {
       optionName: `Messaging/Video Page With Anonmys people`,
       optionDesc: `Engage in conversations and video calls with people from all over the world without revealing your identity. It's a great way to meet new friends and share stories in a safe, private space.`,
-      onClick: () => router.push('/chat')
+      onClick: onChatClick
     },
     {
       optionName: `Chat with AI personalities`,
       optionDesc: `Explore a new kind of conversation with a diverse cast of AI characters. Whether you want to roleplay, learn something new, or just chat, there's an AI waiting to connect with you.`,
-      onClick: () => router.push('/ai')
+      onClick: onAiClick
     },
   ];
 
