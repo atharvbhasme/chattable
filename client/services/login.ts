@@ -3,9 +3,9 @@ import { loginResponseInterface } from "@/types";
 
 export const login = async (username:string, password:string):Promise<loginResponseInterface> => {
     const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`
-    const res:loginResponseInterface = await axiosInstance.post(url,{
+    const res= await axiosInstance.post(url,{
         username: username,
         password: password
     })
-    return res
+    return res.data as loginResponseInterface;
 }

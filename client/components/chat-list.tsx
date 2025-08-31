@@ -7,9 +7,16 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { ChatListItem } from "@/components/chat-list-item";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux";
+import { useSocket } from "@/hooks/useSocket";
 
 export function ChatList() {
-  const arr = Array.from({ length: 20 }, (_, i) => i);
+
+  const usersData = useSelector((state: RootState) => state.users.allUsers);
+  const userData = useSelector((state: RootState) => state.auth.loginResponse);
+  const { onlineUsers } = useSocket(userData.userId);
+  const offlineUsers = usersData.filter((usr)=> !usr.isOnline)
 
   return (
     <Accordion
@@ -22,7 +29,7 @@ export function ChatList() {
           Online
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance px-3 pb-3 h-[400px] overflow-y-auto">
-          {arr.map((i) => (
+          {onlineUsers && onlineUsers.map((value,i) => (
             <ChatListItem key={i} />
           ))}
         </AccordionContent>
@@ -33,7 +40,7 @@ export function ChatList() {
           Old Messages
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance px-3 pb-3 h-[400px] overflow-y-auto">
-          {arr.map((i) => (
+          {offlineUsers && offlineUsers.map((value,i) => (
             <ChatListItem key={i} />
           ))}
         </AccordionContent>

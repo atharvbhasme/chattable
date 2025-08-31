@@ -3,7 +3,11 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { HomePageSelector } from "@/components/home-page-selector";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { setChatMode } from "@/lib/redux/slices/chatModeSlice";
+import { setAllUsers } from "@/lib/redux/slices/userSlice";
+import { getAllUsers } from "@/services/user";
+import { userType } from "@/types";
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 export interface homePageDataInterface {
@@ -15,13 +19,19 @@ export interface homePageDataInterface {
 export default function Landing() {
   const router = useRouter();
   const dispatch = useDispatch();
+  
+  async function getAllUsersData(){
+    const data = await getAllUsers();
+    dispatch(setAllUsers(data))
+  }
+
   const onChatClick = () => {
-     dispatch(setChatMode("normal"))
+     sessionStorage.setItem("mode", "chat")
      console.log("stored the redux state")
      router.push('/chat')
   }
   const onAiClick = () => {
-    dispatch(setChatMode("ai"))
+   sessionStorage.setItem("mode", "ai")
      console.log("stored the redux state")
     router.push('/ai')
   }
@@ -38,6 +48,10 @@ export default function Landing() {
     },
   ];
 
+    useEffect(()=>{
+    getAllUsersData();
+  },[])
+  
   return (
     <SidebarProvider>
       <div className="flex w-full">

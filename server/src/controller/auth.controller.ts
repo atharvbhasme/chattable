@@ -37,7 +37,11 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   })
 
   const userId = user._id
-  const token = await (reply as any).jwtSign({ userId: user._id, username: user.username });
+  const token = await reply.jwtSign({ userId: user._id, username: user.username },{
+    sign: {
+      expiresIn: 60 * 60
+    }
+  });
   return reply.send({ token, userId });
 }
 }

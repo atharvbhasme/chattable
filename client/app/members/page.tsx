@@ -1,12 +1,22 @@
 "use client";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ChatListItem } from "@/components/chat-list-item";
-import { InvitationsCard } from "@/components/ui/invitation-card";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { RootState, } from "@/lib/redux";
+import { setAllUsers } from "@/lib/redux/slices/userSlice";
+import { getAllUsers } from "@/services/user";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Members() {
-  const arr = Array.from({ length: 50 }, (_, i) => i);
-
+  const dispatch = useDispatch();
+  const usersData = useSelector((state: RootState) => state.users.allUsers);
+  useEffect(() => {
+    if (!usersData || usersData.length === 0) {
+      getAllUsers().then(data => dispatch(setAllUsers(data)))
+    }
+  }, [usersData, dispatch]);
+  console.log("all the data ", usersData)
   return (
     <SidebarProvider>
       <div className="flex w-full">
@@ -15,7 +25,7 @@ export default function Members() {
           <SidebarTrigger />
           {/* Grid with exactly 3 items per row */}
           <div className="grid grid-cols-3 gap-4">
-            {arr.map((data, index) => (
+            {usersData.map((data, index) => (
               <ChatListItem key={index} />
             ))}
           </div>

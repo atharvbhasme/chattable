@@ -13,7 +13,7 @@ const userSockets: UserSocketMap = {};
 export const setupSocket = (server: FastifyInstance) => {
   io = new Server(server.server, {
     cors: {
-      origin: 'http://localhost:3000', // your frontend
+      // origin: 'http://localhost:3000', // your frontend
       methods: ['GET', 'POST']
     }
   });

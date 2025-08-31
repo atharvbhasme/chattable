@@ -6,6 +6,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { Providers } from "@/app/providers";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "@/lib/redux";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +36,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
+        <Providers >
+          <PersistGate loading={null} persistor={persistor}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -44,6 +47,7 @@ export default function RootLayout({
             {children}
             <Toaster richColors />
           </ThemeProvider>
+          </PersistGate>
           </Providers>
       </body>
     </html>

@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { userType } from "@/types/index";
 
 const defaultUser: userType = {
-  username: "default-user",
-  email: "demoemaol@mail.com",
-  password: "123",
-  isOnline: false,
-  lastSeen: new Date(),
+  id: "",
+  username: "",
+  email: "",
+  password: "",
+  createdAt: "",
+  updatedAt: "",
+  isOnline: false
 };
 
 interface UserState {
