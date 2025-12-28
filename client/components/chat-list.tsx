@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Accordion,
@@ -10,13 +10,14 @@ import { ChatListItem } from "@/components/chat-list-item";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux";
 import { useSocket } from "@/hooks/useSocket";
+import { Dispatch, SetStateAction } from "react";
 
 export function ChatList() {
-
   const usersData = useSelector((state: RootState) => state.users.allUsers);
-  const userData = useSelector((state: RootState) => state.auth.loginResponse);
+  const currentUser = sessionStorage.getItem("currentUser");
+  const userData = currentUser ? JSON.parse(currentUser) : null;
   const { onlineUsers } = useSocket(userData.userId);
-  const offlineUsers = usersData.filter((usr)=> !usr.isOnline)
+  const offlineUsers = usersData.filter((usr) => !onlineUsers.includes(usr.id));
 
   return (
     <Accordion
@@ -25,24 +26,36 @@ export function ChatList() {
       defaultValue={["item-1"]}
     >
       <AccordionItem value="item-1" className="border rounded-md">
-        <AccordionTrigger className="px-3 py-2">
-          Online
-        </AccordionTrigger>
+        <AccordionTrigger className="px-3 py-2">Online</AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance px-3 pb-3 h-[400px] overflow-y-auto">
-          {onlineUsers && onlineUsers.map((value,i) => (
-            <ChatListItem key={i} />
-          ))}
+          {onlineUsers &&
+            onlineUsers.map((userId, i) => {
+              const user = usersData.find((u) => u.id === userId);
+              if (!user) return null;
+              return (
+                <ChatListItem
+                  key={i}
+                  user={user}
+                  currentUser={userData}
+                  // setSelectedUser={props.setSelectedUser}
+                />
+              );
+            })}
         </AccordionContent>
       </AccordionItem>
 
       <AccordionItem value="item-2" className="border rounded-md">
-        <AccordionTrigger className="px-3 py-2">
-          Old Messages
-        </AccordionTrigger>
+        <AccordionTrigger className="px-3 py-2">Old Messages</AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance px-3 pb-3 h-[400px] overflow-y-auto">
-          {offlineUsers && offlineUsers.map((value,i) => (
-            <ChatListItem key={i} />
-          ))}
+          {offlineUsers &&
+            offlineUsers.map((user, i) => (
+              <ChatListItem
+                key={i}
+                user={user}
+                currentUser={userData}
+                // setSelectedUser={props.setSelectedUser}
+              />
+            ))}
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -29,10 +29,14 @@ export const getOnlineUsers = async (request_: FastifyRequest, reply: FastifyRep
     }
 }
 
-export const getAllUsers = async (request_: FastifyRequest, reply: FastifyReply) => {
+export const getAllUsers = async (request: FastifyRequest, reply: FastifyReply) => {
     let allUsers;
+    const { online } = request.query as {online?: string};
+    console.log("value", online)
     try {
-        allUsers = await UserModel.find();
+        allUsers = online ? await UserModel.find({
+            isOnline: true
+        }) : await UserModel.find()
     } catch (error) {
         reply.status(500).send("Error fetching online users");
         return;
@@ -42,5 +46,19 @@ export const getAllUsers = async (request_: FastifyRequest, reply: FastifyReply)
         reply.status(200).send(allUsers)
     }else{
         reply.status(500).send("No users present in system")
+    }
+}
+
+export const getUserById = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { userId } = request.params as { userId: string };
+    console.log("userid is ", userId)
+    try{
+        const user = await UserModel.find({
+            _id:userId
+        })
+        reply.status(200).send(user)
+    }catch(error){
+        console.error(`Getting while retriving data for user:${userId} Error: ${Error}`)
+        reply.status(500).send(`Error: ${Error}`)
     }
 }

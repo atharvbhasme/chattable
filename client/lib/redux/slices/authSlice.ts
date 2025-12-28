@@ -4,7 +4,7 @@ import { loginResponseInterface } from "@/types"
 
 const defaultLoginResponse: loginResponseInterface = {
   token: "",
-  userId: "",
+  userId: "admin",
 };
 
 interface AuthState {

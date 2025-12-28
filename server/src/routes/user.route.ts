@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify';
-import { getAllUsers, getOnlineUsers, logout } from '../controller/user.controller.ts';
+import { getAllUsers, getUserById, logout } from '../controller/user.controller.ts';
 
 export default async function userRoutes(fastify: FastifyInstance) {
-  fastify.post('/logout', logout);
-  fastify.get('/getAllUsers', getAllUsers);
-  fastify.get('/getOnlineUsers', getOnlineUsers);
+  fastify.post('user/:id/logout', logout);
+  fastify.get('/users', getAllUsers);
+  fastify.get('/users/:userId', getUserById);
 }

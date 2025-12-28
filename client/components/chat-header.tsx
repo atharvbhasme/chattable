@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Video } from "lucide-react";
 
-export function ChatHeader() {
+interface ChatHeaderProps {
+  onVideoCall: () => void;
+  selectedUser: any;
+}
+
+export function ChatHeader({ onVideoCall, selectedUser }: ChatHeaderProps) {
+  const showVideo = true;
   return (
     <div className="flex flex-row justify-between border p-2">
       <Avatar className="h-8 w-8 rounded-lg">
@@ -15,12 +21,14 @@ export function ChatHeader() {
         />
         <AvatarFallback className="rounded-lg">CN</AvatarFallback>
       </Avatar>
-      <div className="text-lg font-semibold">Name</div>
-      <div>
-        <Button>
-          <Video />
-        </Button>
-      </div>
+      <div className="text-lg font-semibold">{selectedUser.username}</div>
+      {showVideo && (
+        <div>
+          <Button onClick={onVideoCall}>
+            <Video />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

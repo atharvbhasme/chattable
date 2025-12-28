@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { homePageDataInterface } from "@/app/landing/page";
 import {
   Card,
@@ -9,12 +9,13 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 
-export function HomePageSelector(
-  data: homePageDataInterface
-) {
-  const {optionName,optionDesc, onClick} = data;
+export function HomePageSelector(data: homePageDataInterface) {
+  const { optionName, optionDesc, onClick } = data;
   return (
-    <Card onClick={onClick} className="max-w-xs md:max-w-md w-80 h-[20rem] bg-slate-50 transition-all duration-300 ease-in-out hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 cursor-pointer shadow-lg rounded-xl flex flex-col justify-between overflow-hidden">
+    <Card
+      onClick={onClick}
+      className="max-w-xs md:max-w-md w-80 h-[20rem] bg-slate-50 transition-all duration-300 ease-in-out hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 cursor-pointer shadow-lg rounded-xl flex flex-col justify-between overflow-hidden"
+    >
       <CardHeader>
         <CardTitle className="text-xl font-bold text-center mb-2">
           {optionName}

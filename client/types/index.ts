@@ -1,7 +1,18 @@
-export interface loginResponseInterface{
+export interface loginResponseInterface {
     token: string | null,
-    userId: string | null,
-    message?: string
+    userId: string,
+    username?: string,
+    email?: string
+}
+
+export interface singUpInterface {
+    message: string
+}
+
+export interface currentLoginedUser {
+    userId?: string;
+    username?: string;
+    email?: string;
 }
 
 export interface userType {
@@ -12,6 +23,8 @@ export interface userType {
     createdAt: string,
     updatedAt: string,
     isOnline?: boolean,
+    requests?: { from: string, status: string }[],
+    friends?: string[]
 }
 
 export interface messageInterface {

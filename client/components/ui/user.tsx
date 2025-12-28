@@ -12,4 +12,4 @@ function User() {
   );
 }
 
-export { User }
+export { User };

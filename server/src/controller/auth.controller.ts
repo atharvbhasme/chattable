@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { UserModel } from '../models/user.model.ts';
 
 export const register = async (request: FastifyRequest, reply: FastifyReply) => {
-    const { username, password, email } = request.body as { username: string, password: string, email: string };
+  const { username, password, email } = request.body as { username: string, password: string, email: string };
 
   const existingUser = await UserModel.findOne({ username });
   if (existingUser) {
@@ -18,30 +18,33 @@ export const register = async (request: FastifyRequest, reply: FastifyReply) => 
 }
 
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
-    const { username, password } = request.body as { username: string, password: string };
+  const { username, password } = request.body as { username: string, password: string };
 
   const user = await UserModel.findOne({ username });
-  if (!user){ 
+  if (!user) {
     return reply.status(404).send({ message: 'User not found' });
-  }else{
-  if (!user.password) {
-    return reply.status(500).send({ message: 'User password is missing' });
-  }
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) return reply.status(401).send({ message: 'Invalid credentials' });
-
-  await UserModel.updateOne({
-    email: user.email
-  },{
-    isOnline: true
-  })
-
-  const userId = user._id
-  const token = await reply.jwtSign({ userId: user._id, username: user.username },{
-    sign: {
-      expiresIn: 60 * 60
+  } else {
+    if (!user.password) {
+      return reply.status(500).send({ message: 'User password is missing' });
     }
-  });
-  return reply.send({ token, userId });
-}
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return reply.status(401).send({ message: 'Invalid credentials' });
+
+    await UserModel.updateOne({
+      email: user.email
+    }, {
+      isOnline: true
+    })
+
+    const userId = user._id
+    const username = user.username
+    const email = user.email
+    const token = await reply.jwtSign({ userId: user._id, username: user.username }, {
+      sign: {
+        expiresIn: 60 * 60
+      }
+    });
+    console.log(`email : ${email}`)
+    return reply.send({ token, userId, username, email });
+  }
 }

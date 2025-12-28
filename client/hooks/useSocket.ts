@@ -22,36 +22,39 @@ export function useSocket(userId: string | null) {
       setMessages((prev) => [...prev, msg]);
     });
 
-    socket.on("incoming-chat-request", ({ fromUserId }) => {
-      console.log("📩 Chat request from:", fromUserId);
-    });
-
-    socket.on("chat-request-accepted", ({ roomId }) => {
-      console.log("✅ Joined room:", roomId);
+    socket.on("video-signal", ({ from, signal }) => {
+      console.log("📹 Incoming video signal:", from, signal);
+      // Handle WebRTC offer/answer/ICECandidate here
     });
 
     return () => {
       socket.off("online-users");
       socket.off("receive-message");
-      socket.off("incoming-chat-request");
-      socket.off("chat-request-accepted");
+      socket.off("video-signal");
     };
   }, [userId]);
 
-  const sendMessage = (roomId: string, sender: string, receiver: string, content: string) => {
+  // Send private message
+  const sendMessage = (receiver: string, content: string) => {
     const socket = getSocket();
-    socket.emit("send-message", { roomId, sender, receiver, content });
+    socket.emit("send-message", { sender: userId, receiver, content });
   };
 
-  const sendChatRequest = (fromUserId: string, toUserId: string) => {
+  // Send WebRTC signaling message
+  const sendVideoSignal = (to: string, signal: any) => {
     const socket = getSocket();
-    socket.emit("chat-request", { fromUserId, toUserId });
+    socket.emit("video-signal", { to, from: userId, signal });
   };
 
-  const acceptChatRequest = (fromUserId: string, toUserId: string, roomId: string) => {
+  const sendRequest = (from: string, to: string) => {
     const socket = getSocket();
-    socket.emit("accept-chat-request", { fromUserId, toUserId, roomId });
+    socket.emit("send-request", { from, to });
   };
 
-  return { onlineUsers, messages, sendMessage, sendChatRequest, acceptChatRequest };
+  const acceptRequest = (from: string, to: string) => {
+    const socket = getSocket();
+    socket.emit("accept-request", { from, to });
+  };
+
+  return { onlineUsers, messages, sendMessage, sendVideoSignal, sendRequest, acceptRequest };
 }

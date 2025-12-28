@@ -7,5 +7,6 @@ export const login = async (username:string, password:string):Promise<loginRespo
         username: username,
         password: password
     })
+    console.log("response data", res)
     return res.data as loginResponseInterface;
 }
