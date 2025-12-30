@@ -15,11 +15,11 @@ interface chatListItemInterface {
 export function ChatListItem({
   user,
   currentUser,
-}: // setSelectedUser,
-{
+  setSelectedUser,
+}: {
   user: userType;
   currentUser: any;
-  // setSelectedUser: any;
+  setSelectedUser: Dispatch<SetStateAction<any>>;
 }) {
   const router = useRouter();
   const { sendRequest, acceptRequest } = useSocket(currentUser.userId);
@@ -48,6 +48,7 @@ export function ChatListItem({
         isOnChatPage
           ? () => {
               sessionStorage.setItem("selectedUser", JSON.stringify(user));
+              setSelectedUser(user);
             }
           : () => {}
       }

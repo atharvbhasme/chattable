@@ -38,7 +38,6 @@ export function SingUpForm({
       input.password
     );
     if (registerResult.message) {
-      console.log("show toast");
       toast("Signup Successful", {
         duration: 2,
       });

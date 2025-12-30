@@ -32,7 +32,6 @@ export function LoginForm({
           duration: 2,
         });
       }
-      console.log(`user info`, response);
       sessionStorage.setItem(
         "currentUser",
         JSON.stringify({

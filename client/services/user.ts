@@ -9,6 +9,16 @@ export const getAllUsers = async ():Promise<userType[]> => {
             'Authorization': `Bearer ${token}`
         }
     })
-    console.log(`get all users`, response)
     return response.data as userType[];
+}
+
+export const getUserById = async (userId:string):Promise<userType> => {
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${userId}`
+    const token = sessionStorage.getItem('token');
+    const response = await axiosInstance.get(url,{
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    return response.data[0] as userType;
 }

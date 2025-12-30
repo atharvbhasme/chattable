@@ -2,7 +2,10 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { HomePageSelector } from "@/components/home-page-selector";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { getMessagesForSingleUser } from "@/services/messaging";
+import { getUserById } from "@/services/user";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export interface homePageDataInterface {
   optionName: string;
@@ -12,7 +15,8 @@ export interface homePageDataInterface {
 
 export default function Landing() {
   const router = useRouter();
-
+  const currentUserString = sessionStorage.getItem("currentUser");
+  const currentUser = currentUserString ? JSON.parse(currentUserString) : {};
   const onChatClick = () => {
     sessionStorage.setItem("mode", "chat");
     router.push("/chat");
@@ -21,6 +25,7 @@ export default function Landing() {
     sessionStorage.setItem("mode", "ai");
     router.push("/ai");
   };
+
   const homePageData: homePageDataInterface[] = [
     {
       optionName: `Messaging/Video Page With Anonmys people`,
@@ -38,6 +43,52 @@ export default function Landing() {
       onClick: onChatClick,
     },
   ];
+
+  const setFirstSelectedUser = async () => {
+    const userMessagingData = await getMessagesForSingleUser(
+      currentUser.userId
+    );
+    console.log(`set setFirstSelectedUser calling`);
+    console.log("user messagin data", userMessagingData);
+    if (userMessagingData.length > 0) {
+      const latestUserWithRequest = userMessagingData.reduce(
+        (latest, current) => {
+          const latestDate = new Date(latest.updatedAt || latest.createdAt);
+          const currentDate = new Date(current.updatedAt || current.createdAt);
+
+          return currentDate > latestDate ? current : latest;
+        }
+      );
+
+      const latestRequest = latestUserWithRequest?.receiver;
+      console.log(`reciever is ${latestRequest}`);
+      if (latestRequest) {
+        const getLastMessagedUser = await getUserById(latestRequest);
+        console.log("last user data", getLastMessagedUser);
+        sessionStorage.setItem(
+          "selectedUser",
+          JSON.stringify(getLastMessagedUser)
+        );
+      }
+    } else {
+      sessionStorage.setItem(
+        "selectedUser",
+        JSON.stringify({
+          id: "",
+          _id: "",
+          username: "",
+          email: "",
+          password: "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    setFirstSelectedUser();
+  }, []);
 
   return (
     <SidebarProvider>

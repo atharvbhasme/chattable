@@ -24,7 +24,6 @@ export default function Members() {
   };
   const currentUserString = sessionStorage.getItem("currentUser");
   const currentUser = currentUserString ? JSON.parse(currentUserString) : {};
-  console.log("all the data ", usersData);
   useEffect(() => {
     const fetchUserData = async () => {
       await getUserData();

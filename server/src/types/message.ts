@@ -7,5 +7,10 @@ export interface messageInput {
 }
 
 export interface GetMessagesQuery {
-  userId: string;
+  senderId: string;
+  receiverID: string
+}
+
+export interface GetMessagesForSingelUserQuery {
+  senderId: string
 }

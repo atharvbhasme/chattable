@@ -13,19 +13,23 @@ import { useRouter } from "next/navigation";
 import { useSocket } from "@/hooks/useSocket";
 
 interface chatWindowInterface {
-  userSelected: string;
+  userSelected: any;
 }
 
 export function ChatWindow(props: chatWindowInterface) {
   const mode = sessionStorage.getItem("mode");
   const router = useRouter();
-  const [userMessages, setUserMessages] = useState<messageInterface[]>();
-  const userData = useSelector((state: RootState) => state.auth.loginResponse);
-  const { sendMessage, messages, sendVideoSignal } = useSocket(userData.userId);
+  const [userMessages, setUserMessages] = useState<messageInterface[]>([]);
+  const currentUserString = sessionStorage.getItem("currentUser");
+  const currentUser = currentUserString ? JSON.parse(currentUserString) : {};
+  const { sendMessage, messages, sendVideoSignal, isConnected } = useSocket(
+    currentUser.userId
+  );
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const selectedUser = props.userSelected;
 
   const startVideoCall = async () => {
     setIsVideoCallActive(true);
@@ -60,37 +64,55 @@ export function ChatWindow(props: chatWindowInterface) {
   };
 
   const getUserMessages = async () => {
-    console.log("user data is", userData);
-    const messageData = userData.userId
-      ? await getMessagesForUser(userData.userId)
-      : [];
+    console.log(
+      `currnet user ${currentUser.userId}, selected user ${
+        selectedUser._id || selectedUser.id
+      }`
+    );
+    const messageData = await getMessagesForUser(
+      currentUser.userId,
+      selectedUser._id || selectedUser.id
+    );
+
+    console.log(`users message ${JSON.stringify(userMessages)}`);
     if (messageData.length > 0) {
       setUserMessages(messageData);
     } else {
       console.log(
         "User does not have any old chat history, redirecting it to members page"
       );
-      router.push("/members");
+      // router.push("/members");
     }
   };
-
-  useEffect(() => {
-    getUserMessages();
-  }, []);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (
+      props.userSelected &&
+      (props.userSelected._id || props.userSelected.id)
+    ) {
+      getUserMessages();
+    }
+  }, [messages, props.userSelected, currentUser]);
 
   return (
     <div className="flex flex-col h-full w-full mx-auto border rounded-lg overflow-hidden bg-background relative">
       {mode == "chat" && (
-        <ChatHeader
-          onVideoCall={startVideoCall}
-          selectedUser={props.userSelected}
-        />
+        <div className="flex items-center justify-between border-b px-4 py-2">
+          <ChatHeader onVideoCall={startVideoCall} />
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-2 w-2 rounded-full ${
+                isConnected ? "bg-green-500" : "bg-red-500"
+              }`}
+            />
+            <span className="text-xs text-muted-foreground">
+              {isConnected ? "Connected" : "Disconnected"}
+            </span>
+          </div>
+        </div>
       )}
 
       {isVideoCallActive && (
@@ -120,8 +142,12 @@ export function ChatWindow(props: chatWindowInterface) {
       )}
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {userMessages &&
-          userMessages.map((msg) => {
+        {[...userMessages, ...messages]
+          .sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          )
+          .map((msg) => {
             const dateTimeStamp = new Date(msg.updatedAt).toLocaleTimeString(
               [],
               {
@@ -133,12 +159,14 @@ export function ChatWindow(props: chatWindowInterface) {
               <div
                 key={msg.id}
                 className={`flex flex-col ${
-                  msg.sender === userData.userId ? "items-end" : "items-start"
+                  msg.sender === currentUser.userId
+                    ? "items-end"
+                    : "items-start"
                 }`}
               >
                 <div
                   className={`px-4 py-2 rounded-lg max-w-[75%] whitespace-pre-wrap ${
-                    msg.sender === userData.userId
+                    msg.sender === currentUser.userId
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-foreground"
                   }`}
@@ -159,10 +187,18 @@ export function ChatWindow(props: chatWindowInterface) {
           placeholder="Type a message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setInput("");
+            }
+          }}
         />
         <Button
           size="icon"
-          onClick={() => sendMessage(props.userSelected, input)}
+          onClick={() => {
+            sendMessage(props.userSelected, input);
+            setInput("");
+          }}
         >
           <Send className="h-4 w-4" />
         </Button>
