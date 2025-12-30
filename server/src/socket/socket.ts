@@ -22,36 +22,44 @@ export const setupSocket = (server: FastifyInstance) => {
 
     // 1. User comes online
     socket.on('user-online', async (userId: string) => {
-      userSockets[userId] = socket.id;
+      try {
+        userSockets[userId] = socket.id;
 
-      await UserModel.findByIdAndUpdate(userId, {
-        isOnline: true,
-        lastSeen: new Date(),
-      });
+        await UserModel.findByIdAndUpdate(userId, {
+          isOnline: true,
+          lastSeen: new Date(),
+        });
 
-      io.emit('online-users', Object.keys(userSockets)); // broadcast list
+        io.emit('online-users', Object.keys(userSockets)); // broadcast list
+      } catch (error) {
+        console.error('Error in user-online:', error);
+      }
     });
 
     // 2. Private messaging
     socket.on('send-message', async ({ sender, receiver, content }) => {
-      const message = new MessageModel({ sender, receiver, content });
-      await message.save();
+      try {
+        const message = new MessageModel({ sender, receiver, content });
+        await message.save();
 
-      const toSocketId = userSockets[receiver];
-      if (toSocketId) {
-        io.to(toSocketId).emit('receive-message', {
+        const toSocketId = userSockets[receiver];
+        if (toSocketId) {
+          io.to(toSocketId).emit('receive-message', {
+            sender,
+            content,
+            createdAt: message.createdAt,
+          });
+        }
+
+        // Optionally echo back to sender (for local UI update)
+        socket.emit('receive-message', {
           sender,
           content,
           createdAt: message.createdAt,
         });
+      } catch (error) {
+        console.error('Error in send-message:', error);
       }
-
-      // Optionally echo back to sender (for local UI update)
-      socket.emit('receive-message', {
-        sender,
-        content,
-        createdAt: message.createdAt,
-      });
     });
 
     // 3. WebRTC signaling (video call)
@@ -123,19 +131,23 @@ export const setupSocket = (server: FastifyInstance) => {
 
     // 4. Disconnect
     socket.on('disconnect', async () => {
-      const userId = Object.keys(userSockets).find(
-        (key) => userSockets[key] === socket.id,
-      );
-      if (userId) {
-        delete userSockets[userId];
-        await UserModel.findByIdAndUpdate(userId, {
-          isOnline: false,
-          lastSeen: new Date(),
-        });
-        io.emit('online-users', Object.keys(userSockets));
-      }
+      try {
+        const userId = Object.keys(userSockets).find(
+          (key) => userSockets[key] === socket.id,
+        );
+        if (userId) {
+          delete userSockets[userId];
+          await UserModel.findByIdAndUpdate(userId, {
+            isOnline: false,
+            lastSeen: new Date(),
+          });
+          io.emit('online-users', Object.keys(userSockets));
+        }
 
-      console.log('❌ Client disconnected:', socket.id);
+        console.log('❌ Client disconnected:', socket.id);
+      } catch (error) {
+        console.error('Error in disconnect:', error);
+      }
     });
   });
 };

@@ -30,7 +30,7 @@ export interface userType {
 export interface messageInterface {
     id: string,
     sender: string,
-    reciever: string,
+    receiver: string,
     content: string,
     read: boolean,
     createdAt: string,

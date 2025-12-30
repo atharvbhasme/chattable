@@ -6,9 +6,28 @@ import { getSocket } from "@/lib/socket";
 export function useSocket(userId: string | null) {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const socket = getSocket();
+
+    function onConnect() {
+      setIsConnected(true);
+      console.log("Socket connected");
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      console.log("Socket disconnected");
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    // Initial check
+    if (socket.connected) {
+      onConnect();
+    }
 
     if (userId) {
       socket.emit("user-online", userId);
@@ -18,8 +37,17 @@ export function useSocket(userId: string | null) {
       setOnlineUsers(users);
     });
 
-    socket.on("receive-message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+    socket.on("receive-message", (msg: any) => {
+      const formattedMsg = {
+        id: Math.random().toString(36).substring(7), // Temporary ID
+        sender: msg.sender,
+        receiver: userId || "", // Typo fixed
+        content: msg.content,
+        read: false,
+        createdAt: msg.createdAt,
+        updatedAt: msg.createdAt,
+      };
+      setMessages((prev) => [...prev, formattedMsg]);
     });
 
     socket.on("video-signal", ({ from, signal }) => {
@@ -28,6 +56,8 @@ export function useSocket(userId: string | null) {
     });
 
     return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
       socket.off("online-users");
       socket.off("receive-message");
       socket.off("video-signal");
@@ -56,5 +86,5 @@ export function useSocket(userId: string | null) {
     socket.emit("accept-request", { from, to });
   };
 
-  return { onlineUsers, messages, sendMessage, sendVideoSignal, sendRequest, acceptRequest };
+  return { onlineUsers, messages, sendMessage, sendVideoSignal, sendRequest, acceptRequest, isConnected };
 }

@@ -33,9 +33,7 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const onLogout = () => {
     sessionStorage.clear();
-    console.log("session is cleared");
     router.push("/");
-    console.log("routetd to login page");
   };
 
   return (

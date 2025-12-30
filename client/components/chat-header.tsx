@@ -5,11 +5,12 @@ import { Video } from "lucide-react";
 
 interface ChatHeaderProps {
   onVideoCall: () => void;
-  selectedUser: any;
 }
 
-export function ChatHeader({ onVideoCall, selectedUser }: ChatHeaderProps) {
+export function ChatHeader({ onVideoCall }: ChatHeaderProps) {
   const showVideo = true;
+  const selectedUserString = sessionStorage.getItem("selectedUser");
+  const selectedUser = selectedUserString ? JSON.parse(selectedUserString) : {};
   return (
     <div className="flex flex-row justify-between border p-2">
       <Avatar className="h-8 w-8 rounded-lg">
@@ -21,7 +22,7 @@ export function ChatHeader({ onVideoCall, selectedUser }: ChatHeaderProps) {
         />
         <AvatarFallback className="rounded-lg">CN</AvatarFallback>
       </Avatar>
-      <div className="text-lg font-semibold">{selectedUser.username}</div>
+      <div className="text-lg font-semibold">{selectedUser?.username}</div>
       {showVideo && (
         <div>
           <Button onClick={onVideoCall}>
